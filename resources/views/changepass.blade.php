@@ -2,33 +2,17 @@
 <html lang="es">
 
 <head>
-    <!-- // Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Required meta tags // -->
-
     <meta name="description"
         content="Login and Register Form HTML Template - developed by 'ceosdesigns' - sold exclusively on 'themeforest.net'">
     <meta name="author" content="ceosdesigns.sk">
-
     <title>ERP</title>
-
-    <!-- // Favicon -->
     <link href="{{ asset('login/images/favicon.png') }}" rel="icon">
-    <!-- Favicon // -->
-
-    <!-- // Google Web Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600&amp;display=swap" rel="stylesheet">
-    <!-- Google Web Fonts // -->
-
-    <!-- // Font Awesome 5 Free -->
     <link href="{{ asset('login/css/all.css') }}" crossorigin="anonymous" rel="stylesheet">
-    <!-- Font Awesome 5 Free // -->
-
-    <!-- // Template CSS files -->
     <link href="{{ asset('login/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('login/css/styles.css') }}" rel="stylesheet">
-    <!-- Template CSS files  // -->
     <style type="text/css">
         @keyframes ldio-w6bds7bumam {
             0% {
@@ -129,44 +113,33 @@
 
         <div class="nm-tm-wr">
             <div class="container">
-                <form class="login-form" method="POST" action="{{ route('inicio') }}">
+                <form class="login-form" method="POST" action="{{ route('savePass') }}"
+                    onsubmit="return validateForm()">
                     @csrf
                     <div style="background: #ce383a47;" class="nm-hr nm-up-rl-3">
                         <img style="max-width: 100%;" src="{{ asset('login/logo_erp.png') }}">
                     </div>
-
+                    <input type="text" value="{{ $idUsuario }}" name="idUsuario" id="idUsuario" >
                     <div class="input-group nm-gp">
                         <span class="nm-gp-pp"><i class="fas fa-user"></i></span>
-                        <input name="usuario" type="text" class="form-control" id="inputUsername" tabindex="1"
-                            placeholder="Usuario" required>
+                        <input name="password1" type="password" class="form-control" id="password1" tabindex="1"
+                            placeholder="Clave" required>
                     </div>
-
                     <div class="input-group nm-gp">
-                        <span class="nm-gp-pp"><i class="fas fa-lock"></i></span>
-                        <input name="password" type="password" class="form-control" id="inputPassword" tabindex="2"
-                            placeholder="Contrase&ntilde;a" required>
+                        <span class="nm-gp-pp"><i class="fas fa-user"></i></span>
+                        <input name="password2" type="password" class="form-control" id="password2" tabindex="2"
+                            placeholder="Confirmar Clave" required>
                     </div>
-
-                    <div class="input-group nm-gp">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="rememberMe">
-                            <label class="form-check-label nm-check" for="rememberMe">Mantenme conectado</label>
-                        </div>
-                    </div>
-
+                    <div id="error-message" style="color: red;"></div>
                     <div class="row nm-aic nm-mb-1">
                         <div class="col-sm-6 nm-mb-1 nm-mb-sm-0">
-                            <button id="submit" class="btn btn-primary nm-hvr nm-btn-2">Ingresar</button>
-                        </div>
-
-                        <div class="col-sm-6 nm-sm-tr">
-                            <a class="nm-fs-1 nm-fw-bd" href="{{ route('resetPass') }}">¿Has olvidado tu
-                                contrase&ntilde;a</a>
+                            <button id="submit" class="btn btn-primary nm-hvr nm-btn-2">Validar</button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
+
     </main>
 
     <!-- // Vendor JS files -->
@@ -178,6 +151,25 @@
     <script src="{{ asset('login/js/script.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        function validateForm() {
+            const password1 = document.getElementById('password1').value;
+            const password2 = document.getElementById('password2').value;
+            const errorMessage = document.getElementById('error-message');
+            const regex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+            if (password1 !== password2) {
+                errorMessage.textContent = 'Las contraseñas no coinciden.';
+                return false;
+            }
+
+            if (!regex.test(password1)) {
+                errorMessage.textContent =
+                    'La contraseña debe tener al menos 8 caracteres, una letra mayúscula y un número.';
+                return false;
+            }
+
+            return true;
+        }
         @if ($errors->has('usuario'))
             Swal.fire({
                 icon: "error",

@@ -6,6 +6,7 @@ use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -58,7 +59,7 @@ class AuthController extends Controller
             return redirect()->back()->withErrors(['usuario' => $errorMessage]);
         }
     }
-    
+
     public function logout(Request $request)
     {
         Auth::logout();
@@ -66,6 +67,44 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+        return redirect('/');
+    }
+
+    public function resetPass()
+    {
+        return view('resetpass');
+    }
+
+    public function validarUsuario(Request $request)
+    {
+        $usuario = $request->usuario;
+        $user = Usuario::where('usuario', $request->usuario)->first();
+        $idUsuario = $user->id;
+        if ($user) {
+            return view('changepass', compact('idUsuario'));
+        } else {
+            $errorMessage = __('auth.failed');
+            return redirect()->back()->withErrors(['usuario' => $errorMessage]);
+        }
+    }
+
+    public function savePass(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'password1' => ['required', 'string', 'min:8', 'regex:/[A-Z]/', 'regex:/[0-9]/'],
+            'password2' => ['required', 'string', 'same:password1'],
+        ], [
+            'password1.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password1.regex' => 'La contraseña debe tener al menos una letra mayúscula y un número.',
+            'password2.same' => 'Las contraseñas no coinciden.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        $usuario = Usuario::findOrFail($request->idUsuario);
+        $usuario->clave = $request->password1;
+        $usuario->save();
         return redirect('/');
     }
 }
