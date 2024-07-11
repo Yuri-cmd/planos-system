@@ -143,7 +143,8 @@ class DashboardController extends Controller
                             r.ocupacion,
                             r.monto,
                             r.direccion,
-                            v.id_reserva as venta
+                            v.id_reserva as venta,
+                            date(r.fecha) as fecha
                         FROM
                             reserva r
                             INNER JOIN usuario u on u.id = r.id_asesor
@@ -180,19 +181,23 @@ class DashboardController extends Controller
 
     public function saveCliente(Request $request)
     {
-        $cliente = new Cliente();
-        $cliente->nombreUser = Session::get('nombre');
-        $cliente->nombre = $request->nombre;
-        $cliente->dni = $request->dni;
-        $cliente->telefono = $request->telefono;
-        $cliente->visita = $request->visita;
-        $cliente->rubro = $request->rubro;
-        $cliente->tipoVenta = $request->tipoVenta;
-        // Guardar el cliente en la base de datos
-        $cliente->save();
-
-        // Devolver una respuesta (opcional)
-        return response()->json(['mensaje' => 'Cliente guardado correctamente'], 200);
+        $existeCliente = Cliente::where('dni', $request->dni)->get();
+        if ($existeCliente->isEmpty()) {
+            $cliente = new Cliente();
+            $cliente->nombreUser = Session::get('nombre');
+            $cliente->nombre = $request->nombre;
+            $cliente->dni = $request->dni;
+            $cliente->telefono = $request->telefono;
+            $cliente->visita = $request->visita;
+            $cliente->rubro = $request->rubro;
+            $cliente->tipoVenta = $request->tipoVenta;
+            // Guardar el cliente en la base de datos
+            $cliente->save();
+            // Devolver una respuesta (opcional)
+            return response()->json(['mensaje' => 'Cliente guardado correctamente', 'status' => true], 200);
+        } else {
+            return response()->json(['mensaje' => 'Ya existe el DNI registrado', 'status' => false], 200);
+        }
     }
 
     public function deleteCliente(Request $request)
@@ -206,13 +211,11 @@ class DashboardController extends Controller
     {
         $cliente = Cliente::findOrFail($request->id);
         $cliente->nombre = $request->nombre;
-        $cliente->tipodoc = $request->tipoDocumento;
-        $cliente->documento = $request->documento;
-        $cliente->telefono1 = $request->telefono1;
-        $cliente->telefono2 = $request->telefono2;
-        $cliente->direccion = $request->direccion;
-        $cliente->distrito = $request->distrito;
-        $cliente->provincia = $request->provincia;
+        $cliente->dni = $request->dni;
+        $cliente->telefono = $request->telefono;
+        $cliente->visita = $request->visita;
+        $cliente->rubro = $request->rubro;
+        $cliente->tipoVenta = $request->tipoVenta;
         // Actualiza más campos según sea necesario
         $cliente->save();
 

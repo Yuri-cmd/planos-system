@@ -530,14 +530,15 @@
                                         <th scope="col">Asesor</th>
                                         <th scope="col" id="cargoT">Empresa</th>
                                         <th scope="col">Nombres y Apellidos</th>
-                                        <th scope="col">DNI – RUC</th>
-                                        <th scope="col">Dirección</th>
+                                        <th scope="col">DNI - RUC</th>
+                                        <th scope="col">Direcci&oacute;n</th>
                                         <th scope="col">Celular</th>
                                         <th scope="col">Correo</th>
-                                        <th scope="col">Ocupación</th>
+                                        <th scope="col">Ocupaci&oacute;n</th>
                                         <th scope="col">Monto</th>
                                         <th scope="col">Descripcion</th>
                                         <th scope="col">Estado</th>
+                                        <th scope="col">Fecha</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tbodyV">
@@ -604,14 +605,15 @@
                                 <th scope="col">Asesor</th>
                                 <th scope="col" id="cargoT">Empresa</th>
                                 <th scope="col">Nombres y Apellidos</th>
-                                <th scope="col">DNI – RUC</th>
-                                <th scope="col">Dirección</th>
+                                <th scope="col">DNI - RUC</th>
+                                <th scope="col">Direcci&oacute;n</th>
                                 <th scope="col">Celular</th>
                                 <th scope="col">Correo</th>
-                                <th scope="col">Ocupación</th>
+                                <th scope="col">Ocupaci&oacute;n</th>
                                 <th scope="col">Monto</th>
                                 <th scope="col">Descripcion</th>
                                 <th scope="col">Estado</th>
+                                <th scope="col">Fecha</th>
                             </tr>
                         </thead>
                         <tbody id="tbody">
@@ -737,6 +739,7 @@
                         tbody += `<td>${v.monto}</td>`;
                         tbody += `<td>${v.direccion}</td>`;
                         tbody += `<td>${v.venta ? 'vendido' : 'reserva'}</td>`;
+                        tbody += `<td>${v.fecha}</td>`;
                         tbody += '</tr>';
                     });
                     $('#tbody').html(tbody);
@@ -835,32 +838,36 @@
 
         function cargarEstados(estados, flag, estado, reserva = false) {
             let option = '<option value="">--Elegir--</option>';
-            $.each(estados, function(i, v) {
-                if (!flag) {
-                    if (v.id !== 1 && v.id !== 2) {
-                        if (reserva == '1' && v.id !== 3 && estado !== 4) {
+            if (estado == 5) {
+                option += `<option value="0">${'Desbloquear'}</option>`;
+            } else {
+                $.each(estados, function(i, v) {
+                    if (!flag) {
+                        if (v.id !== 1 && v.id !== 2) {
+                            if (reserva == '1' && v.id !== 3 && estado !== 4) {
+                                option +=
+                                    `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
+                            }
+
+                            if (reserva == '1' && v.id !== 3 && estado == 4 && v.id !== 4) {
+                                option +=
+                                    `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
+                            }
+
+                            if (reserva !== '1') {
+                                option +=
+                                    `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
+                            }
+
+                        }
+                    } else {
+                        if (v.id == 1 || v.id == 2 || v.id == 5) {
                             option +=
                                 `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
                         }
-
-                        if (reserva == '1' && v.id !== 3 && estado == 4 && v.id !== 4) {
-                            option +=
-                                `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
-                        }
-
-                        if (reserva !== '1') {
-                            option +=
-                                `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
-                        }
-
                     }
-                } else {
-                    if (v.id == 1 || v.id == 2) {
-                        option +=
-                            `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
-                    }
-                }
-            });
+                });
+            }
             $('#estado').html(option);
         }
 
@@ -1155,6 +1162,7 @@
                                 tbody += `<td>${v.monto}</td>`;
                                 tbody += `<td>${v.direccion}</td>`;
                                 tbody += `<td>${v.venta ? 'vendido' : 'reserva'}</td>`;
+                                tbody += `<td>${v.fecha}</td>`;
                                 tbody += '</tr>';
                             });
                             $('#tbodyV').html(tbody);
@@ -1168,7 +1176,7 @@
                     $('#viewCredito').val(venta.credito);
                     $('#viewContado').val(venta.contado);
 
-                    // Configurar el botón para ver el voucher
+                    // Configurar el bot&oacute;n para ver el voucher
                     $('#viewVoucherBtn').off('click').on('click', function() {
                         window.open('/storage/' + venta.voucher, '_blank');
                     });

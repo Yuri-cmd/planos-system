@@ -185,7 +185,7 @@
 
 
         $("#guardarPersona").click(function() {
-            // Validar que todos los campos estén llenos
+            // Validar que todos los campos est&aacute;n llenos
             if ($("#formularioPersona")[0].checkValidity()) {
                 // Obtener los valores de los campos
                 var usuario = $("#usuario").val();
@@ -218,7 +218,7 @@
                         // Aquí puedes manejar los errores
                     }
                 });
-                // Cerrar el modal después de guardar
+                // Cerrar el modal despu&aacute;s de guardar
                 $("#addClienteModal").modal("hide");
             } else {
                 // Mostrar mensaje de error o manejar la validación de otra manera
@@ -241,7 +241,7 @@
             if (ids.length > 0) {
                 Swal.fire({
                     title: "¿Estas seguro?",
-                    text: "¡No podrás revertir esto!",
+                    text: "¡No podras revertir esto!",
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#3085d6",

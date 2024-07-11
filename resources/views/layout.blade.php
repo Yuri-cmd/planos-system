@@ -35,16 +35,18 @@
                         </li>
                         <hr>
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="{{ route('dashboard') }}"><i class="bi bi-speedometer"></i> Dashboard</a>
+                            <a class="nav-link active" aria-current="page" href="{{ route('dashboard') }}"><i
+                                    class="bi bi-speedometer"></i> Dashboard</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="{{ route('clientes') }}"><i
+                                    class="bi bi-people-fill"></i> Clientes</a>
                             @if (Session::get('rol') == 1)
-                                <a class="nav-link active" aria-current="page"
-                                    href="{{ route('clientes') }}"><i class="bi bi-people-fill"></i> Clientes</a>
-                                <a class="nav-link active" aria-current="page"
-                                    href="{{ route('usuarios') }}"><i class="bi bi-people-fill"></i> Usuarios</a>
+                                <a class="nav-link active" aria-current="page" href="{{ route('usuarios') }}"><i
+                                        class="bi bi-people-fill"></i> Usuarios</a>
                             @endif
-                            <a class="nav-link active" aria-current="page" href="{{ route('logout') }}"><i class="bi bi-box-arrow-left"></i> Cerar
+                            <a class="nav-link active" aria-current="page" href="{{ route('logout') }}"><i
+                                    class="bi bi-box-arrow-left"></i> Cerar
                                 Sesi&oacute;n</a>
                         </li>
                     </ul>
