@@ -59,4 +59,92 @@ class ReportesController extends Controller
 
         return view('dashboard.ventas-reservas', compact('fecha_inicio', 'fecha_fin', 'tipo', 'labels', 'total_reservas', 'total_ventas'));
     }
+
+    public function viewVentasR(Request $request)
+    {
+        $fecha_inicio = $request->input('fecha_inicio');
+        $fecha_fin = $request->input('fecha_fin');
+        $tipo = $request->input('tipo');
+
+        $query = DB::table('ventas');
+
+        if ($fecha_inicio) {
+            $query->whereDate('created_at', '>=', $fecha_inicio);
+        }
+        if ($fecha_fin) {
+            $query->whereDate('created_at', '<=', $fecha_fin);
+        }
+
+        $labels = [];
+        $total_tipoPago = [];
+        $total_contado = [];
+        $total_credito = [];
+
+        if ($tipo == 'tipoPago') {
+            $data = $query->select('tipoPago', DB::raw('COUNT(*) as total'))
+                ->groupBy('tipoPago')
+                ->get();
+            $labels = $data->pluck('tipoPago')->toArray();
+            $total_tipoPago = $data->pluck('total')->toArray();
+        } elseif ($tipo == 'contado') {
+            $data = $query->select('contado', DB::raw('COUNT(*) as total'))
+                ->groupBy('contado')
+                ->get();
+            $labels = $data->pluck('contado')->toArray();
+            $total_contado = $data->pluck('total')->toArray();
+        } elseif ($tipo == 'credito') {
+            $data = $query->select('credito', DB::raw('COUNT(*) as total'))
+                ->groupBy('credito')
+                ->get();
+            $labels = $data->pluck('credito')->toArray();
+            $total_credito = $data->pluck('total')->toArray();
+        } else {
+            $tipoPagoData = $query->select('tipoPago', DB::raw('COUNT(*) as total'))
+                ->groupBy('tipoPago')
+                ->get();
+            $contadoData = $query->select('contado', DB::raw('COUNT(*) as total'))
+                ->groupBy('contado')
+                ->get();
+            $creditoData = $query->select('credito', DB::raw('COUNT(*) as total'))
+                ->groupBy('credito')
+                ->get();
+
+            $labels_tipoPago = $tipoPagoData->pluck('tipoPago')->toArray();
+            $labels_contado = $contadoData->pluck('contado')->toArray();
+            $labels_credito = $creditoData->pluck('credito')->toArray();
+
+            $labels = array_unique(array_merge($labels_tipoPago, $labels_contado, $labels_credito));
+
+            $total_tipoPago = array_fill(0, count($labels), 0);
+            $total_contado = array_fill(0, count($labels), 0);
+            $total_credito = array_fill(0, count($labels), 0);
+
+            foreach ($labels_tipoPago as $index => $label) {
+                $key = array_search($label, $labels);
+                $total_tipoPago[$key] = $tipoPagoData[$index]->total;
+            }
+
+            foreach ($labels_contado as $index => $label) {
+                $key = array_search($label, $labels);
+                $total_contado[$key] = $contadoData[$index]->total;
+            }
+
+            foreach ($labels_credito as $index => $label) {
+                $key = array_search($label, $labels);
+                $total_credito[$key] = $creditoData[$index]->total;
+            }
+        }
+
+        if ($request->ajax()) {
+            return response()->json([
+                'labels' => $labels,
+                'total_tipoPago' => $total_tipoPago,
+                'total_contado' => $total_contado,
+                'total_credito' => $total_credito,
+                'tipo' => $tipo
+            ]);
+        }
+
+        return view('dashboard.ventas', compact('fecha_inicio', 'fecha_fin', 'tipo', 'labels', 'total_tipoPago', 'total_contado', 'total_credito'));
+    }
 }

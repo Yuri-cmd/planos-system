@@ -52,3 +52,4 @@ Route::post('actualizarUsuario', [DashboardController::class, 'actualizarUsuario
 //reporte
 Route::get('admin/tiendas', [ReportesController::class, 'viewTienda'])->name('viewTienda');
 Route::get('admin/ventas/reservas', [ReportesController::class, 'viewVentas'])->name('viewVentas');
+Route::get('admin/ventas', [ReportesController::class, 'viewVentasR'])->name('viewVentasR');
