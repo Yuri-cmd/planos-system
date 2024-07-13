@@ -78,9 +78,9 @@ class AuthController extends Controller
     public function validarUsuario(Request $request)
     {
         $usuario = $request->usuario;
-        $user = Usuario::where('usuario', $request->usuario)->first();
-        $idUsuario = $user->id;
+        $user = Usuario::where('usuario', $request->usuario)->where('correo', "{$request->correo}")->where('celular', "{$request->celular}")->first();
         if ($user) {
+            $idUsuario = $user->id;
             return view('changepass', compact('idUsuario'));
         } else {
             $errorMessage = __('auth.failed');

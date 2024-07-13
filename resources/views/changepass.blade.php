@@ -119,7 +119,7 @@
                     <div style="background: #ce383a47;" class="nm-hr nm-up-rl-3">
                         <img style="max-width: 100%;" src="{{ asset('login/logo_erp.png') }}">
                     </div>
-                    <input type="text" value="{{ $idUsuario }}" name="idUsuario" id="idUsuario" >
+                    <input type="text" value="{{ $idUsuario }}" name="idUsuario" id="idUsuario" hidden>
                     <div class="input-group nm-gp">
                         <span class="nm-gp-pp"><i class="fas fa-user"></i></span>
                         <input name="password1" type="password" class="form-control" id="password1" tabindex="1"

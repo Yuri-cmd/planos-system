@@ -660,14 +660,19 @@
             let rol = "{{ Session::get('rol') }}";
             let nombreTienda = $(this).data('tienda');
             let numero = $(this).data('numero');
+            let showVenta = '';
+            let detalle = '';
             if (rol !== "3") {
                 let flag = estado == "3";
-                let texto = flag ? 'Ver detalle' : 'Asignar reserva';
-                let detalle = estado !== "4" ?
-                    `<div><button type="button" class="btn btn-success" id="detalle">${texto}</button></div>` : '';
-                let showVenta = estado == "4" ?
-                    `<button type="button" class="btn btn-danger" onclick="viewVentaBtn(${id})">Ver detalle venta</button>` :
-                    '';
+                if (estado !== 0) {
+                    let texto = flag ? 'Ver detalle' : 'Asignar reserva';
+                    detalle = estado !== "4" ?
+                        `<div><button type="button" class="btn btn-success" id="detalle">${texto}</button></div>` :
+                        '';
+                    showVenta = estado == "4" ?
+                        `<button type="button" class="btn btn-danger" onclick="viewVentaBtn(${id})">Ver detalle venta</button>` :
+                        '';
+                }
                 Swal.fire({
                     title: `<strong>Detalle: ${nombreTienda}:${numero}</strong>`,
                     icon: "info",
