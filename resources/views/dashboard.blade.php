@@ -598,28 +598,30 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <table class="table table-striped table-striped-columns">
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Asesor</th>
-                                <th scope="col" id="cargoT">Empresa</th>
-                                <th scope="col">Nombres y Apellidos</th>
-                                <th scope="col">DNI - RUC</th>
-                                <th scope="col">Direcci&oacute;n</th>
-                                <th scope="col">Celular</th>
-                                <th scope="col">Correo</th>
-                                <th scope="col">Ocupaci&oacute;n</th>
-                                <th scope="col">Monto</th>
-                                <th scope="col">Descripcion</th>
-                                <th scope="col">Estado</th>
-                                <th scope="col">Fecha</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-striped-columns">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Asesor</th>
+                                    <th scope="col" id="cargoT">Empresa</th>
+                                    <th scope="col">Nombres y Apellidos</th>
+                                    <th scope="col">DNI - RUC</th>
+                                    <th scope="col">Direcci&oacute;n</th>
+                                    <th scope="col">Celular</th>
+                                    <th scope="col">Correo</th>
+                                    <th scope="col">Ocupaci&oacute;n</th>
+                                    <th scope="col">Monto</th>
+                                    <th scope="col">Descripcion</th>
+                                    <th scope="col">Estado</th>
+                                    <th scope="col">Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody">
 
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>

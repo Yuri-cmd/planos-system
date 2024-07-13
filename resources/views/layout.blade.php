@@ -19,7 +19,7 @@
 <body>
     <nav class="navbar navbar-dark bg-dark fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Planos</a>
+            <a class="navbar-brand" href="{{ route('dashboard') }}">Planos</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas"
                 data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar"
                 aria-label="Toggle navigation">
@@ -54,6 +54,8 @@
                                 <a class="nav-link active" aria-current="page" href="{{ route('viewVentas') }}"><i
                                         class="bi bi-graph-up-arrow"></i> Reporte Venta/Reserva</a>
                                 <a class="nav-link active" aria-current="page" href="{{ route('viewVentasR') }}"><i
+                                        class="bi bi-bar-chart-fill"></i> Reporte Grafico Ventas</a>
+                                <a class="nav-link active" aria-current="page" href="{{ route('viewVentaAll') }}"><i
                                         class="bi bi-bar-chart-fill"></i> Reporte Ventas</a>
                             @endif
                             <a class="nav-link active" aria-current="page" href="{{ route('logout') }}"><i

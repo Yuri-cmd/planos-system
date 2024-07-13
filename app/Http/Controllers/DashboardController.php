@@ -6,11 +6,13 @@ use App\Models\Cliente;
 use App\Models\CuentaBancaria;
 use App\Models\Reserva;
 use App\Models\Rol;
+use App\Models\SeccionTienda;
 use App\Models\Usuario;
 use App\Models\Venta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
 class DashboardController extends Controller
 {
@@ -160,12 +162,11 @@ class DashboardController extends Controller
     public function saveColor(Request $request)
     {
         $tipo = $request->estado == 1 ? 'Empresa' : 'Socio';
-        DB::table('secciones_tienda')
-            ->where('id_tienda', $request->id)
-            ->update([
-                'estado' => $request->estado,
-                'nombre_cargo' => $tipo . '/' . $request->nombreCargo,
-            ]);;
+        $nombre = $request->estado == 0 ? null : $tipo . '/' . $request->nombreCargo;
+        $tienda = SeccionTienda::findOrFail($request->id);
+        $tienda->nombre_cargo = $nombre;
+        $tienda->estado = $request->estado;
+        $tienda->save();
     }
 
     public function clientes()

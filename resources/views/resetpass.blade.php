@@ -123,7 +123,16 @@
                         <input name="usuario" type="text" class="form-control" id="inputUsername" tabindex="1"
                             placeholder="Usuario" required>
                     </div>
-
+                    <div class="input-group nm-gp">
+                        <span class="nm-gp-pp"><i class="fas fa-user"></i></span>
+                        <input name="correo" type="text" class="form-control" id="correo" tabindex="1"
+                            placeholder="Correo" required>
+                    </div>
+                    <div class="input-group nm-gp">
+                        <span class="nm-gp-pp"><i class="fas fa-user"></i></span>
+                        <input name="celular" type="text" class="form-control" id="celular" tabindex="1"
+                            placeholder="Celular" required>
+                    </div>
                     <div class="row nm-aic nm-mb-1">
                         <div class="col-sm-6 nm-mb-1 nm-mb-sm-0">
                             <button id="submit" class="btn btn-primary nm-hvr nm-btn-2">Validar</button>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Seccion;
+use App\Models\Venta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -146,5 +147,32 @@ class ReportesController extends Controller
         }
 
         return view('dashboard.ventas', compact('fecha_inicio', 'fecha_fin', 'tipo', 'labels', 'total_tipoPago', 'total_contado', 'total_credito'));
+    }
+
+    public function viewVentaAll()
+    {
+        $ventas = Venta::select(
+            'ventas.created_at',
+            'usuario.nombre as asesor_nombre',
+            'secciones_tienda.nombre_cargo',
+            'reserva.nombre',
+            'reserva.documento',
+            'reserva.direccion',
+            'reserva.celular',
+            'reserva.correo',
+            'reserva.ocupacion',
+            'reserva.monto',
+            'reserva.comentario',
+            'ventas.cuenta',
+            'ventas.tipoPago',
+            'ventas.convenio',
+            'ventas.credito',
+            'ventas.contado'
+        )
+            ->join('reserva', 'reserva.id_reserva', '=', 'ventas.id_reserva')
+            ->join('usuario', 'usuario.id', '=', 'reserva.id_asesor')
+            ->join('secciones_tienda', 'secciones_tienda.id_tienda', '=', 'reserva.id_tienda')
+            ->get();
+        return view('dashboard.reporte-venta', compact("ventas"));
     }
 }
