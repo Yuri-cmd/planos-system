@@ -664,7 +664,7 @@
             let detalle = '';
             if (rol !== "3") {
                 let flag = estado == "3";
-                if (estado !== 0) {
+                if (estado !== "0" && estado !== "5") {
                     let texto = flag ? 'Ver detalle' : 'Asignar reserva';
                     detalle = estado !== "4" ?
                         `<div><button type="button" class="btn btn-success" id="detalle">${texto}</button></div>` :
@@ -714,7 +714,15 @@
                     viewVentaBtn(id);
                     return;
                 }
-                showCrear(id, cargo);
+                if (estado == "1" || estado == "2") {
+                    showCrear(id, cargo);
+                    return;
+                }
+                Swal.fire({
+                    title: "Info",
+                    text: "El puesto no tiene asignado una empresa o socio",
+                    icon: "info"
+                });
             }
         });
 
@@ -744,7 +752,7 @@
                         tbody += `<td>${v.correo}</td>`;
                         tbody += `<td>${v.ocupacion}</td>`;
                         tbody += `<td>${v.monto}</td>`;
-                        tbody += `<td>${v.direccion}</td>`;
+                        tbody += `<td>${v.comentario}</td>`;
                         tbody += `<td>${v.venta ? 'vendido' : 'reserva'}</td>`;
                         tbody += `<td>${v.fecha}</td>`;
                         tbody += '</tr>';
@@ -846,7 +854,7 @@
         function cargarEstados(estados, flag, estado, reserva = false) {
             let option = '<option value="">--Elegir--</option>';
             if (estado == 5) {
-                option += `<option value="0">${'Desbloquear'}</option>`;
+                option += `<option value="6">${'Desbloquear'}</option>`;
             } else {
                 $.each(estados, function(i, v) {
                     if (!flag) {
@@ -888,16 +896,25 @@
                     nombreCargo: nombreCargo
                 },
                 function(data, textStatus, jqXHR) {
-                    Swal.fire({
-                        position: "top-end",
-                        icon: "success",
-                        title: "Se guardo correctamente",
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                    setTimeout(function() {
-                        location.reload();
-                    }, 1500);
+                    if (data == true) {
+                        Swal.fire({
+                            position: "top-end",
+                            icon: "success",
+                            title: "Se guardo correctamente",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        Swal.fire({
+                            title: "Info",
+                            text: "Debe escoger una opción",
+                            icon: "info"
+                        });
+                        return;
+                    }
 
                 },
             );
@@ -1129,7 +1146,7 @@
                 },
                 error: function(response) {
                     // Handle error response
-                    alert('Hubo un error al guardar los datos');
+                    alert('Todos los campos son requeridos');
                 }
             });
         });
@@ -1167,7 +1184,7 @@
                                 tbody += `<td>${v.correo}</td>`;
                                 tbody += `<td>${v.ocupacion}</td>`;
                                 tbody += `<td>${v.monto}</td>`;
-                                tbody += `<td>${v.direccion}</td>`;
+                                tbody += `<td>${v.comentario}</td>`;
                                 tbody += `<td>${v.venta ? 'vendido' : 'reserva'}</td>`;
                                 tbody += `<td>${v.fecha}</td>`;
                                 tbody += '</tr>';

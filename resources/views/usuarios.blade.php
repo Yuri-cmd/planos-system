@@ -32,6 +32,8 @@
                                 <th class="text-center">Id</th>
                                 <th class="text-center">Usuario</th>
                                 <th class="text-center">Nombre</th>
+                                <th class="text-center">Correo</th>
+                                <th class="text-center">Celular</th>
                                 <th class="text-center">Rol</th>
                                 <th class="text-center">Estado</th>
                                 <th class="text-center">Editar</th>
@@ -63,6 +65,14 @@
                         <div class="mb-3">
                             <label for="nombre" class="form-label">Nombre</label>
                             <input type="text" class="form-control" id="nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="correo" class="form-label">Correo</label>
+                            <input type="email" class="form-control" id="correo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="celular" class="form-label">Celular</label>
+                            <input type="phone" class="form-control" id="celular" required>
                         </div>
                         <div class="mb-3">
                             <label for="rol" class="form-label">Rol</label>
@@ -106,6 +116,14 @@
                         <div class="mb-3">
                             <label for="claveEdit" class="form-label">Clave</label>
                             <input type="password" class="form-control" id="claveEdit" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="correo" class="form-label">Correo</label>
+                            <input type="email" class="form-control" id="correoEdit" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="celular" class="form-label">Celular</label>
+                            <input type="phone" class="form-control" id="celularEdit" required>
                         </div>
                         <div class="mb-3">
                             <label for="rolEdit" class="form-label">Rol</label>
@@ -157,6 +175,12 @@
                     "data": "nombre"
                 },
                 {
+                    "data": "correo"
+                },
+                {
+                    "data": "celular"
+                },
+                {
                     "data": "rol",
                     "render": function(data, type, row) {
                         return data.rol; // Asumiendo que 'rol' es un objeto con propiedad 'rol'
@@ -192,6 +216,8 @@
                 var clave = $("#clave").val();
                 var nombre = $("#nombre").val();
                 var rol = $("#rol").val();
+                var correo = $("#correo").val();
+                var celular = $("#celular").val();
 
                 $.ajax({
                     url: '{{ route('saveUsuario') }}',
@@ -202,6 +228,8 @@
                         usuario: usuario,
                         clave: clave,
                         rol: rol,
+                        correo: correo,
+                        celular: celular,
                     },
                     success: function(response) {
                         Swal.fire({
@@ -292,6 +320,8 @@
             $('#usuarioEdit').val(data.usuario);
             $('#claveEdit').val(data.clave);
             $('#rolEdit').val(data.rol.id);
+            $('#correoEdit').val(data.correo);
+            $('#celularEdit').val(data.celular);
             $('#estadoEdit').val(data.estado);
             // Mostrar el modal de edición
             $('#editarClienteModal').modal('show');
@@ -305,6 +335,8 @@
             let clave = $('#claveEdit').val();
             let rol = $('#rolEdit').val();
             let estado = $('#estadoEdit').val();
+            let celular = $('#celularEdit').val();
+            let correo = $('#correoEdit').val();
 
             // Objeto con los datos a enviar
             let datosCliente = {
@@ -314,7 +346,9 @@
                 usuario: usuario,
                 clave: clave,
                 rol: rol,
-                estado: estado
+                estado: estado,
+                celular: celular,
+                correo: correo,
             };
 
             // Ejemplo de solicitud AJAX para guardar los cambios (adaptar según tu aplicación)

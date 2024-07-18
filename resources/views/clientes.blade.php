@@ -1,5 +1,38 @@
 @extends('layout')
 @section('content')
+    <style>
+        .dataTables_wrapper .dt-buttons {
+            float: left;
+        }
+
+        .dataTables_wrapper .dataTables_filter {
+            float: right;
+            text-align: left;
+        }
+
+        .dataTables_wrapper .dataTables_paginate {
+            text-align: center;
+        }
+
+        .paging_simple_numbers {
+            display: flex;
+            justify-content: center;
+        }
+
+        .buttons-excel {
+            background-color: #4CAF50 !important;
+            border: none !important;
+            color: white !important;
+            padding: 10px 24px !important;
+            text-align: center !important;
+            text-decoration: none !important;
+            display: inline-block !important;
+            font-size: 16px !important;
+            margin: 4px 2px !important;
+            cursor: pointer !important;
+            border-radius: 5px !important;
+        }
+    </style>
     <div class="contenedor-almacen" style="margin-top: 100px; padding: 10px;">
         <div class="page-title-box">
             <div class="col-md-4">
@@ -22,7 +55,9 @@
                             Agregar
                             Usuario
                         </button>
-                        <button class="btn btn-danger btnBorrar"><i class="bi bi-trash-fill"></i> Borrar</button>
+                        @if (Session::get('rol') == 1)
+                            <button class="btn btn-danger btnBorrar"><i class="bi bi-trash-fill"></i> Borrar</button>
+                        @endif
                     </div>
                 </div>
                 <div class="card-body" style="height: auto">
@@ -149,10 +184,12 @@
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
     <script>
         let token = "{{ csrf_token() }}";
-        let tabla = $('#example').DataTable({
+        let tabla = $('#example').DataTable({   
             "ajax": {
                 "url": "{{ route('getClientes') }}",
                 "dataSrc": ""
@@ -191,7 +228,7 @@
                     "data": null,
                     "render": function(data, type, row) {
                         if (row && row.id) {
-                            return `<button data-item="${row.id}" class="btn-edt btn btn-sm btn-info" style="color:white;"><i class="bi bi-pencil-square"></i></button>`;
+                            return `<button data-item="${row.id}" class="{{ Session::get('rol') == 1 ? 'btn-edt' : '' }} btn btn-sm btn-info" style="color:white;"><i class="bi bi-pencil-square"></i></button>`;
                         }
                         return '';
                     }
@@ -205,7 +242,16 @@
                         return '';
                     }
                 }
-            ]
+            ],
+            @if (Session::get('rol') == 1)
+                dom: 'Bfrtip',
+                buttons: [{
+                    extend: 'excelHtml5',
+                    title: `Reporte de clientes`,
+                    text: 'Excel',
+                    className: 'btn btn-primary'
+                }],
+            @endif
         });
 
 

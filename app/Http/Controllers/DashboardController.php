@@ -107,6 +107,8 @@ class DashboardController extends Controller
         $usuario->clave = $request->clave;
         $usuario->nombre = $request->nombre;
         $usuario->rol = $request->rol;
+        $usuario->correo = $request->correo;
+        $usuario->celular = $request->celular;
         $usuario->save();
 
         return response()->json(['mensaje' => 'Cliente guardado correctamente'], 200);
@@ -127,6 +129,8 @@ class DashboardController extends Controller
         $usuario->nombre = $request->nombre;
         $usuario->rol = $request->rol;
         $usuario->estado = $request->estado;
+        $usuario->correo = $request->correo;
+        $usuario->celular = $request->celular;
         $usuario->save();
         return response()->json(['mensaje' => 'Cliente actualizado correctamente'], 200);
     }
@@ -144,7 +148,7 @@ class DashboardController extends Controller
                             r.correo,
                             r.ocupacion,
                             r.monto,
-                            r.direccion,
+                            r.comentario,
                             v.id_reserva as venta,
                             date(r.fecha) as fecha
                         FROM
@@ -161,12 +165,52 @@ class DashboardController extends Controller
 
     public function saveColor(Request $request)
     {
-        $tipo = $request->estado == 1 ? 'Empresa' : 'Socio';
-        $nombre = $request->estado == 0 ? null : $tipo . '/' . $request->nombreCargo;
-        $tienda = SeccionTienda::findOrFail($request->id);
+        if ($request->estado == 6) {
+            $tienda = SeccionTienda::findOrFail($request->id);
+            $nombre = $tienda->nombre_cargo ?: null;
+            $estado = $this->determinarEstado($nombre);
+            $this->actualizarTienda($tienda, $nombre, $estado);
+            return response()->json(true);
+        } elseif (trim($request->estado) !== '' && $request->estado !== 0) {
+            $tienda = SeccionTienda::findOrFail($request->id);
+            $nombre = $this->getNombreCargo($tienda, $request->estado, $request->nombreCargo);
+            $this->actualizarTienda($tienda, $nombre, $request->estado);
+            return response()->json(true);
+        } else {
+            return response()->json(false);
+        }
+    }
+
+    function getNombreCargo($tienda, $estado, $nombreCargo)
+    {
+        if ($estado == 1) {
+            return 'Empresa/' . $nombreCargo;
+        } elseif ($estado == 2) {
+            return 'Socio/' . $nombreCargo;
+        } elseif ($estado == 5 && $tienda->nombre_cargo) {
+            return $tienda->nombre_cargo;
+        } elseif ($estado == 0) {
+            return null;
+        } else {
+            return $nombreCargo;
+        }
+    }
+
+    function actualizarTienda($tienda, $nombre, $estado)
+    {
         $tienda->nombre_cargo = $nombre;
-        $tienda->estado = $request->estado;
+        $tienda->estado = $estado;
         $tienda->save();
+    }
+
+    function determinarEstado($nombreCargo)
+    {
+        if (strpos($nombreCargo, 'Socio') !== false) {
+            return 2;
+        } elseif (strpos($nombreCargo, 'Empresa') !== false) {
+            return 1;
+        }
+        return 6; // Estado por defecto si no coincide con 'Socio' o 'Empresa'
     }
 
     public function clientes()
@@ -182,23 +226,27 @@ class DashboardController extends Controller
 
     public function saveCliente(Request $request)
     {
-        $existeCliente = Cliente::where('dni', $request->dni)->get();
-        if ($existeCliente->isEmpty()) {
-            $cliente = new Cliente();
-            $cliente->nombreUser = Session::get('nombre');
-            $cliente->nombre = $request->nombre;
-            $cliente->dni = $request->dni;
-            $cliente->telefono = $request->telefono;
-            $cliente->visita = $request->visita;
-            $cliente->rubro = $request->rubro;
-            $cliente->tipoVenta = $request->tipoVenta;
-            // Guardar el cliente en la base de datos
-            $cliente->save();
-            // Devolver una respuesta (opcional)
-            return response()->json(['mensaje' => 'Cliente guardado correctamente', 'status' => true], 200);
-        } else {
+        $existeDNI = Cliente::where('dni', $request->dni)->get();
+        $existeTelefono = Cliente::where('telefono', $request->telefono)->get();
+        if (!$existeDNI->isEmpty()) {
             return response()->json(['mensaje' => 'Ya existe el DNI registrado', 'status' => false], 200);
         }
+
+        if (!$existeTelefono->isEmpty()) {
+            return response()->json(['mensaje' => 'Ya existe el telefono registrado', 'status' => false], 200);
+        }
+        $cliente = new Cliente();
+        $cliente->nombreUser = Session::get('nombre');
+        $cliente->nombre = $request->nombre;
+        $cliente->dni = $request->dni;
+        $cliente->telefono = $request->telefono;
+        $cliente->visita = $request->visita;
+        $cliente->rubro = $request->rubro;
+        $cliente->tipoVenta = $request->tipoVenta;
+        // Guardar el cliente en la base de datos
+        $cliente->save();
+        // Devolver una respuesta (opcional)
+        return response()->json(['mensaje' => 'Cliente guardado correctamente', 'status' => true], 200);
     }
 
     public function deleteCliente(Request $request)

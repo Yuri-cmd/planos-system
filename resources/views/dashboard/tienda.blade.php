@@ -90,7 +90,7 @@
     <script>
         let token = "{{ csrf_token() }}";
         $('#example').DataTable({
-            dom: 'Bfrtip', // Define dónde aparecerán los botones
+            dom: 'Bfrtip',
             buttons: [{
                 extend: 'excelHtml5',
                 title: `Reporte de tiendas ${obtenerFechaFormateada()}`,
