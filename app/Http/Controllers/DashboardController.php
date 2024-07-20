@@ -23,7 +23,8 @@ class DashboardController extends Controller
         $seccion3 = $this->get_tiendas(3);
         $seccion4 = $this->get_tiendas(4);
         $seccion5 = $this->get_tiendas(5);
-        return view('dashboard', compact("seccion1", "seccion2", "seccion3", "seccion4", "seccion5"));
+        $seccion6 = $this->get_tiendas(6);
+        return view('dashboard', compact("seccion1", "seccion2", "seccion3", "seccion4", "seccion5", "seccion6"));
     }
 
     public function getEstados()
@@ -167,21 +168,22 @@ class DashboardController extends Controller
     {
         if ($request->estado == 6) {
             $tienda = SeccionTienda::findOrFail($request->id);
-            $nombre = $tienda->nombre_cargo ?: null;
+            $nombre = $tienda->nombre_cargo ? $tienda->nombre_cargo : null;
             $estado = $this->determinarEstado($nombre);
             $this->actualizarTienda($tienda, $nombre, $estado);
             return response()->json(true);
         } elseif (trim($request->estado) !== '' && $request->estado !== 0) {
             $tienda = SeccionTienda::findOrFail($request->id);
-            $nombre = $this->getNombreCargo($tienda, $request->estado, $request->nombreCargo);
-            $this->actualizarTienda($tienda, $nombre, $request->estado);
+            $nombre = $this->getNombreCargo($tienda, $request->estado, $request->nombreCargo, $tienda->estado);
+            $estado = $request->estado == 5 ? $request->estado : $this->determinarEstado($nombre, $tienda->estado);
+            $this->actualizarTienda($tienda, $nombre, $estado);
             return response()->json(true);
         } else {
             return response()->json(false);
         }
     }
 
-    function getNombreCargo($tienda, $estado, $nombreCargo)
+    function getNombreCargo($tienda, $estado, $nombreCargo, $estadoActual)
     {
         if ($estado == 1) {
             return 'Empresa/' . $nombreCargo;
@@ -190,7 +192,7 @@ class DashboardController extends Controller
         } elseif ($estado == 5 && $tienda->nombre_cargo) {
             return $tienda->nombre_cargo;
         } elseif ($estado == 0) {
-            return null;
+            return  $estadoActual == 3 ? $tienda->nombre_cargo :null;
         } else {
             return $nombreCargo;
         }
@@ -203,14 +205,29 @@ class DashboardController extends Controller
         $tienda->save();
     }
 
-    function determinarEstado($nombreCargo)
+    function determinarEstado($nombreCargo, $estado = null)
     {
+        
+        if($estado == 3 || $estado == 4){
+            if (strpos($nombreCargo, 'Socio') !== false) {
+                return 2;
+            } elseif (strpos($nombreCargo, 'Empresa') !== false) {
+                return 1;
+            }
+        }
+
+        if($estado == 1 || $estado == 2){
+            return 0;
+        }
+
         if (strpos($nombreCargo, 'Socio') !== false) {
             return 2;
         } elseif (strpos($nombreCargo, 'Empresa') !== false) {
             return 1;
         }
-        return 6; // Estado por defecto si no coincide con 'Socio' o 'Empresa'
+
+        
+        return 0;
     }
 
     public function clientes()
@@ -298,22 +315,27 @@ class DashboardController extends Controller
             // Obtener el ID de inserción
             $idInsercion = $reserva->id_reserva;
         }
+
         $validatedData = $request->validate([
-            'cuenta' => 'required|string',
-            'voucher' => 'required|mimes:png,jpg,jpeg|max:2048',
-            'contratos' => 'required',
-            'contratos.*' => 'mimes:pdf|max:2048',
+            'vouchers.*' => 'required|mimes:png,jpg,jpeg,pdf|max:2048',
             'tipoPago' => 'required|string',
             'convenio' => 'required|string',
             'flexRadioDefault' => 'required|string',
             'contado' => 'required|string',
+            'contratos.*' => 'mimes:pdf|max:2048', // No requerimos 'contratos' en sí
         ]);
 
-        $voucherPath = $request->file('voucher')->store('vouchers', 'public');
+        $voucherPaths = [];
         $contratosPaths = [];
+        if ($request->hasfile('vouchers')) {
+            foreach ($request->file('vouchers') as $file) {
+                $path = $file->store('vouchers', 'custom_public');
+                $voucherPaths[] = $path;
+            }
+        }
         if ($request->hasfile('contratos')) {
             foreach ($request->file('contratos') as $file) {
-                $path = $file->store('contratos', 'public');
+                $path = $file->store('contratos', 'custom_public');
                 $contratosPaths[] = $path;
             }
         }
@@ -323,7 +345,7 @@ class DashboardController extends Controller
         $venta->idtienda = $request->idtiendaV;
         $venta->id_reserva = $idInsercion;
         $venta->cuenta = $request->cuenta;
-        $venta->voucher = $voucherPath;
+        $venta->voucher = json_encode($voucherPaths);
         $venta->contratos = json_encode($contratosPaths);
         $venta->tipoPago = $request->tipoPago;
         $venta->convenio = $request->convenio;
@@ -333,12 +355,10 @@ class DashboardController extends Controller
 
         DB::table('secciones_tienda')
             ->where('id_tienda', $request->idtiendaV)
-            ->update([
-                'estado' => 4,
-            ]);;
+            ->update(['estado' => 4]);
+
         return response()->json(['success' => 'Datos guardados exitosamente']);
     }
-
     public function getVenta(Request $request)
     {
         $venta = Venta::where('idtienda', $request->id)->first();
@@ -358,5 +378,48 @@ class DashboardController extends Controller
         } else {
             return true;
         }
+    }
+
+    public function updateVoucher(Request $request)
+    {
+        $venta = Venta::find($request->id);
+
+        if ($request->hasFile('voucher')) {
+            $file = $request->file('voucher');
+            $path = $file->store('vouchers', 'custom_public');
+            $vouchers = json_decode($venta->voucher, true);
+            if (is_null($vouchers)) {
+                $vouchers = [];
+            }
+            $vouchers[] = $path;
+            $venta->voucher = json_encode($vouchers);
+            $venta->save();
+
+            return response()->json(['success' => true, 'voucher' => $path]);
+        }
+
+        return response()->json(['success' => false]);
+    }
+
+    public function updateContrato(Request $request)
+    {
+        $venta = Venta::find($request->id);
+
+        if ($request->hasFile('contrato')) {
+            $file = $request->file('contrato');
+            $path = $file->store('contratos', 'custom_public');
+
+            $contratos = json_decode($venta->contratos, true);
+            if (is_null($contratos)) {
+                $contratos = [];
+            }
+            $contratos[] = $path;
+            $venta->contratos = json_encode($contratos);
+            $venta->save();
+
+            return response()->json(['success' => true, 'contrato' => $path]);
+        }
+
+        return response()->json(['success' => false]);
     }
 }

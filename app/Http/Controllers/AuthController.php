@@ -12,8 +12,8 @@ class AuthController extends Controller
 {
     public function showLoginForm()
     {
-        if (Session::has('usuario_id')) {
-            $rol = Session::get('rol');
+        if (session()->has('usuario_id')) {
+            $rol = session('rol');
             if ($rol == 1) {
                 return redirect()->route('dashboard');
             } elseif ($rol == 2) {
@@ -22,9 +22,8 @@ class AuthController extends Controller
                 return redirect()->route('dashboard');
             }
         } else {
-            return view('welcome');
+            return view('welcome'); // Asumiendo que 'welcome' es la vista de inicio de sesión
         }
-        return view('welcome');
     }
 
     public function login(Request $request)
@@ -62,13 +61,12 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/'); // Redirigir a la página de inicio de sesión
     }
+
 
     public function resetPass()
     {

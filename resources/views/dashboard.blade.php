@@ -1,5 +1,26 @@
 @extends('layout')
 @section('content')
+    <style>
+        .custom-file-upload {
+            display: inline-block;
+            cursor: pointer;
+            background-color: #198754;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .custom-file-upload input[type="file"] {
+            display: none;
+        }
+
+        .custom-file-upload i {
+            margin-right: 8px;
+        }
+    </style>
     <div style="margin-top: 70px; padding: 10px; display: flex; align-items: center;">
         <div>
             <span id="zona">Ir al sotano</span>
@@ -10,7 +31,7 @@
         </div>
     </div>
 
-    <div class="piso">
+    <div class="piso" style="display: none;">
         <div class="plano">
             <div class="section">
                 @foreach ($seccion1 as $item)
@@ -232,8 +253,8 @@
             </div>
         </div>
     </div>
-    <div class="sotano" style="display: none; width: fit-content;">
-        <div class="plano" style="width: 100%">
+    <div class="sotano" style="width: fit-content;">
+        <div class="plano" style="width: 100%; display: flex; flex-direction: column;">
             <div class="section"
                 style="grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, 1fr); gap: 10px;">
                 @foreach ($seccion5 as $item)
@@ -263,6 +284,29 @@
                     </div>
                 @endforeach
             </div>
+            <div class="plano" style="margin-top: 20px;">
+                <div class="section-horizontal" style="grid-template-columns: repeat(1, 1fr);">
+                    @foreach ($seccion6 as $item)
+                        <div class="grid-item-horizontal">
+                            <h5>{{ ucwords(strtolower($item['nombre'])) }}</h5>
+                            <div class="sub-grid-horizontal"
+                                style="grid-template-columns: repeat({{ $item['cantidad_tiendas'] }}, 1fr);">
+                                @foreach ($item['tiendas'] as $i => $tienda)
+                                    <div class="sub-grid-item-horizontal addComprador"
+                                        data-estado="{{ $tienda['estado'] }}" data-id="{{ $tienda['id'] }}"
+                                        data-cargo="{{ $tienda['nombreCargo'] }}"
+                                        style="display: flex; justify-content: center;{{ color($tienda['estado']) }}; width: 41.63px; height:31px;"
+                                        data-tienda="{{ ucwords(strtolower($item['nombre'])) }}"
+                                        data-numero="{{ $tienda['numeracion'] }}">
+                                        <div style="width: 25px; border: 1px solid black; border-radius: 50%;">
+                                            {{ $tienda['numeracion'] }}</div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
         </div>
         <div class="leyenda">
             <div class="fila" style="flex-direction: row; justify-content: space-evenly;">
@@ -281,6 +325,10 @@
                 <div class="content-item">
                     <div class="color" style="background-color: green;"></div>
                     <div class="texto"><span>D- EMBUTIDOS</span></div>
+                </div>
+                <div class="content-item">
+                    <div class="color" style="background-color: red;"></div>
+                    <div class="texto"><span>E- FLORES</span></div>
                 </div>
             </div>
         </div>
@@ -309,35 +357,35 @@
                         <hr>
                         <p>Datos Cliente:</p>
                         <div class="mb-3">
-                            <label for="name" class="form-label">Nombres y Apellidos</label>
+                            <label for="name" class="form-label">Nombres y Apellidos *</label>
                             <input type="text" class="form-control" id="name" required>
                         </div>
                         <div class="mb-3">
-                            <label for="dni" class="form-label">DNI – RUC </label>
+                            <label for="dni" class="form-label">DNI – RUC *</label>
                             <input type="text" class="form-control" id="dni" required>
                         </div>
                         <div class="mb-3">
-                            <label for="direccion" class="form-label">Direcci&oacute;n</label>
+                            <label for="direccion" class="form-label">Direcci&oacute;n *</label>
                             <input type="text" class="form-control" id="direccion" required>
                         </div>
                         <div class="mb-3">
-                            <label for="telefono" class="form-label">Celular</label>
+                            <label for="telefono" class="form-label">Celular *</label>
                             <input type="phone" class="form-control" id="telefono" required>
                         </div>
                         <div class="mb-3">
-                            <label for="correo" class="form-label">Correo</label>
+                            <label for="correo" class="form-label">Correo *</label>
                             <input type="email" class="form-control" id="correo" required>
                         </div>
                         <div class="mb-3">
-                            <label for="ocupacion" class="form-label">Ocupaci&oacute;n</label>
+                            <label for="ocupacion" class="form-label">Ocupaci&oacute;n *</label>
                             <input type="text" class="form-control" id="ocupacion" required>
                         </div>
                         <div class="mb-3">
-                            <label for="monto" class="form-label">Monto</label>
+                            <label for="monto" class="form-label">Monto *</label>
                             <input type="bumber" class="form-control" id="monto" required>
                         </div>
                         <div class="mb-3">
-                            <label for="comentario" class="form-label">Descripcion</label>
+                            <label for="comentario" class="form-label">Descripcion *</label>
                             <textarea class="form-control" id="comentario" required></textarea>
                         </div>
                     </form>
@@ -398,7 +446,7 @@
                         <input type="text" class="form-control" id="idtiendaV" name="idtiendaV" value=""
                             hidden>
                         <div class="mb-3">
-                            <label for="reservas" class="form-label">Reservas</label>
+                            <label for="reservas" class="form-label">Reservas *</label>
                             <select type="text" class="form-control" id="reservas" name="reservas">
 
                             </select>
@@ -407,58 +455,53 @@
                             <input type="text" class="form-control" id="idn" name="idn"
                                 value="{{ Session::get('usuario_id') }}" hidden>
                             <div class="mb-3">
-                                <label for="asesor" class="form-label">Asesor</label>
+                                <label for="asesor" class="form-label">Asesor *</label>
                                 <input type="text" class="form-control" id="asesor"
                                     value="{{ Session::get('usuario') }}" readonly>
                             </div>
                             <div class="mb-3">
-                                <label for="cargo" class="form-label" id="cargoTn">Empresa o Socio</label>
+                                <label for="cargo" class="form-label" id="cargoTn">Empresa o Socio *</label>
                                 <input type="text" class="form-control" id="cargon" value="" readonly>
                             </div>
                             <hr>
                             <p>Datos Cliente:</p>
                             <div class="mb-3">
-                                <label for="name" class="form-label">Nombres y Apellidos</label>
+                                <label for="name" class="form-label">Nombres y Apellidos *</label>
                                 <input type="text" class="form-control" id="namen" name="namen">
                             </div>
                             <div class="mb-3">
-                                <label for="dni" class="form-label">DNI – RUC </label>
+                                <label for="dni" class="form-label">DNI – RUC *</label>
                                 <input type="text" class="form-control" id="dnin" name="dnin">
                             </div>
                             <div class="mb-3">
-                                <label for="direccion" class="form-label">Direcci&oacute;n</label>
+                                <label for="direccion" class="form-label">Direcci&oacute;n *</label>
                                 <input type="text" class="form-control" id="direccionn" name="direccionn">
                             </div>
                             <div class="mb-3">
-                                <label for="telefono" class="form-label">Celular</label>
+                                <label for="telefono" class="form-label">Celular *</label>
                                 <input type="phone" class="form-control" id="telefonon" name="telefonon">
                             </div>
                             <div class="mb-3">
-                                <label for="correo" class="form-label">Correo</label>
+                                <label for="correo" class="form-label">Correo *</label>
                                 <input type="email" class="form-control" id="correon" name="correon">
                             </div>
                             <div class="mb-3">
-                                <label for="ocupacion" class="form-label">Ocupaci&oacute;n</label>
+                                <label for="ocupacion" class="form-label">Ocupaci&oacute;n *</label>
                                 <input type="text" class="form-control" id="ocupacionn" name="ocupacionn">
                             </div>
                             <div class="mb-3">
-                                <label for="monto" class="form-label">Monto</label>
+                                <label for="monto" class="form-label">Monto *</label>
                                 <input type="bumber" class="form-control" id="monton" name="monton">
                             </div>
                             <div class="mb-3">
-                                <label for="comentario" class="form-label">Descripcion</label>
+                                <label for="comentario" class="form-label">Descripcion *</label>
                                 <textarea class="form-control" id="comentarion" name="comentarion"></textarea>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="cuenta" class="form-label">N&deg; Cuenta</label>
-                            <select type="text" class="form-control" id="cuenta" name="cuenta">
-
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="voucher" class="form-label">Adjuntar Voucher</label>
-                            <input class="form-control" type="file" id="voucher" accept=".png, .jpg, .jpeg">
+                            <label for="voucher" class="form-label">Adjuntar Voucher *</label>
+                            <input class="form-control" type="file" id="voucher" accept=".png, .jpg, .jpeg, .pdf"
+                                multiple>
                             <div id="file-error" style="color: red; display: none;">Solo se permiten archivos PNG y JPG.
                             </div>
                         </div>
@@ -468,18 +511,24 @@
                             <div id="file-error" style="color: red; display: none;">Solo se permiten archivos PDF.</div>
                         </div>
                         <div class="mb-3">
-                            <label for="tipoPago" class="form-label">Tipo de Pago</label>
+                            <label for="tipoPago" class="form-label">Tipo de Pago *</label>
                             <select type="text" class="form-control" id="tipoPago" name="tipoPago">
                                 <option value="Transferencia">Transferencia</option>
                                 <option value="Pago efectivo">Pago efectivo</option>
                             </select>
                         </div>
+                        <div class="mb-3" id="cuentan">
+                            <label for="cuenta" class="form-label">N&deg; Cuenta *</label>
+                            <select type="text" class="form-control" id="cuenta" name="cuenta">
+
+                            </select>
+                        </div>
                         <div class="mb-3">
-                            <label for="convenio" class="form-label">Convenio Separaci&oacute;n</label>
+                            <label for="convenio" class="form-label">Convenio Separaci&oacute;n *</label>
                             <input class="form-control" type="text" id="convenio" name="convenio">
                         </div>
                         <div class="mb-3">
-                            <label for="convenio" class="form-label">Credito</label>
+                            <label for="convenio" class="form-label">Credito *</label>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="flexRadioDefault" id="unicachi"
                                     value="unicachi">
@@ -496,7 +545,7 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="contado" class="form-label">Contado</label>
+                            <label for="contado" class="form-label">Contado *</label>
                             <select type="text" class="form-control" id="contado" name="contado">
                                 <option value="si">Si</option>
                                 <option value="No">No</option>
@@ -546,28 +595,47 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="mb-3">
-                            <label for="viewCuenta" class="form-label">N&deg; Cuenta</label>
-                            <input type="text" class="form-control readonly" id="viewCuenta" readonly>
-                        </div>
-                        <div class="mb-3" style="display: flex; flex-direction: column;">
-                            <label for="viewVoucher" class="form-label">Voucher</label>
-                            <div>
-                                <button type="button" class="btn btn-primary" id="viewVoucherBtn"><i
-                                        class="bi bi-eye-fill"></i> Ver Voucher</button>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="viewContratos" class="form-label">Contratos</label>
-                            <div id="viewContratosList"
-                                style="display: flex; flex-direction: column; width: fit-content;">
-
-                            </div>
-                        </div>
+                        <input type="text" id="viewVentaId" hidden>
                         <div class="mb-3">
                             <label for="viewTipoPago" class="form-label">Tipo de Pago</label>
                             <input type="text" class="form-control readonly" id="viewTipoPago" readonly>
                         </div>
+                        <div class="mb-3">
+                            <label for="viewCuenta" class="form-label">N&deg; Cuenta</label>
+                            <input type="text" class="form-control readonly" id="viewCuenta" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="viewVoucher" class="form-label">Voucher</label>
+                            <div id="viewVoucherList" style="display: flex; flex-direction: column; width: fit-content;">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div id="viewVoucherContainer"
+                                style="display: flex; flex-direction: column; width: fit-content;">
+                                <label class="custom-file-upload">
+                                    <input type="file" class="form-control-file bg-success " name="voucher[]"
+                                        id="viewVoucher" accept=".png, .jpg, .jpeg, .pdf">
+                                    <i class="bi bi-plus-square-fill"></i> Añadir voucher
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="viewContratos" class="form-label">Contratos</label>
+                            <div id="viewContratosList"
+                                style="display: flex; flex-direction: column; width: fit-content;"></div>
+                        </div>
+                        <div class="mb-3">
+                            <div id="viewContratosContainer"
+                                style="display: flex; flex-direction: column; width: fit-content;">
+                                <label class="custom-file-upload">
+                                    <input type="file" class="form-control-file bg-success " name="contratos[]"
+                                        id="viewContratos" accept="application/pdf">
+                                    <i class="bi bi-plus-square-fill"></i> Añadir contrato
+                                </label>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label for="viewConvenio" class="form-label">Convenio</label>
                             <input type="text" class="form-control readonly" id="viewConvenio" readonly>
@@ -640,17 +708,39 @@
     <script>
         let token = "{{ csrf_token() }}";
 
-        $('#switch').change(function() {
-            if ($(this).is(':checked')) {
+        $('.piso').show();
+        $('.sotano').hide();
+        $(document).ready(function() {
+            // Check if the switch state is saved in localStorage
+            var switchState = localStorage.getItem('switchState');
+            if (switchState === 'checked') {
+                $('#switch').prop('checked', true);
                 $('#zona').html('Ir al piso 1');
                 $('.piso').hide();
                 $('.sotano').show();
             } else {
+                $('#switch').prop('checked', false);
                 $('#zona').html('Ir al sotano');
                 $('.piso').show();
                 $('.sotano').hide();
             }
+
+            // Handle switch change event
+            $('#switch').change(function() {
+                if ($(this).is(':checked')) {
+                    $('#zona').html('Ir al piso 1');
+                    $('.piso').hide();
+                    $('.sotano').show();
+                    localStorage.setItem('switchState', 'checked');
+                } else {
+                    $('#zona').html('Ir al sotano');
+                    $('.piso').show();
+                    $('.sotano').hide();
+                    localStorage.setItem('switchState', 'unchecked');
+                }
+            });
         });
+
 
         $('.addComprador').click(function() {
             $('#regresar').hide();
@@ -678,7 +768,7 @@
                     icon: "info",
                     html: `<div style="display: flex; justify-content: space-evenly;">
                                 <div>
-                                    <button type="button" class="btn btn-primary" onclick="updateColor(${id}, ${estado}, '${cargo}')">Cambiar Estado</button>
+                                    <button type="button" class="btn btn-primary" onclick="updateColor(${id}, ${estado}, '${cargo}', ${rol})">Cambiar Estado</button>
                                 </div>
                                 ${detalle}
                                 
@@ -790,7 +880,7 @@
                 monto: $('#monto').val(),
                 comentario: $('#comentario').val()
             };
-
+            console.log(data);
             if (validateForm(data)) {
                 $.post("{{ route('saveComprador') }}", {
                         _token: token,
@@ -824,7 +914,7 @@
             }
         });
 
-        function updateColor(id, estado, cargo) {
+        function updateColor(id, estado, cargo, rol) {
             $.get("{{ route('getEstados') }}",
                 function(data, textStatus, jqXHR) {
                     let estados = JSON.parse(data);
@@ -835,12 +925,12 @@
                                 idTienda: id,
                             },
                             function(data, textStatus, jqXHR) {
-                                let tieneReserva = data;
-                                cargarEstados(estados, flag, estado, tieneReserva);
+                                let tieneReserva = estado == "0" || estado == "1" || estado == "2" ? null : data;
+                                cargarEstados(estados, flag, estado, rol, tieneReserva);
                             },
                         );
                     } else {
-                        cargarEstados(estados, flag, estado);
+                        cargarEstados(estados, flag, estado, rol);
                     }
                     $('#idtiendaU').val(id);
                     $('#cargoC').val(cargo);
@@ -851,32 +941,53 @@
             Swal.close();
         }
 
-        function cargarEstados(estados, flag, estado, reserva = false) {
+        function cargarEstados(estados, flag, estado, rol, reserva = false) {
             let option = '<option value="">--Elegir--</option>';
             if (estado == 5) {
                 option += `<option value="6">${'Desbloquear'}</option>`;
             } else {
                 $.each(estados, function(i, v) {
                     if (!flag) {
-                        if (v.id !== 1 && v.id !== 2) {
-                            if (reserva == '1' && v.id !== 3 && estado !== 4) {
+                        if (reserva == '1' && v.id !== 3 && estado !== 4) {
+                            if (v.id !== 1 && v.id !== 2) {
+                                if (rol !== 1 && v.id !== 0) {
+                                    option +=
+                                        `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
+                                }
+                                if (rol == 1) {
+                                    option +=
+                                        `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
+                                }
+                            }
+                        }
+
+                        if (reserva == '1' && v.id !== 3 && estado == 4 && v.id !== 4 && v.id !== 5) {
+                            if (v.id !== 1 && v.id !== 2) {
+                                if (rol !== 1 && v.id !== 0) {
+                                    option +=
+                                        `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
+                                }
+                                if (rol == 1) {
+                                    option +=
+                                        `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
+                                }
+                            }
+                        }
+
+                        if (reserva !== '1') {
+                            if (rol !== 1 && v.id !== 0) {
                                 option +=
                                     `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
                             }
-
-                            if (reserva == '1' && v.id !== 3 && estado == 4 && v.id !== 4) {
-                                option +=
-                                    `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
+                            if (rol == 1) {
+                                if (v.id !== 1 && v.id !== 2) {
+                                    option +=
+                                        `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
+                                }
                             }
-
-                            if (reserva !== '1') {
-                                option +=
-                                    `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
-                            }
-
                         }
                     } else {
-                        if (v.id == 1 || v.id == 2 || v.id == 5) {
+                        if (v.id == 1 || v.id == 2) {
                             option +=
                                 `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
                         }
@@ -941,7 +1052,9 @@
             if (value == 1 || value == 2) {
                 $('.nombre_cargo').show();
             }
+            let idtienda = $('#idtiendaU').val();
             if (value == 3) {
+                $('#idtienda').val(idtienda)
                 $('#updateColor').modal('hide');
                 $('#vendedorAdd').modal('show');
                 let cargo = $('#cargoC').val();
@@ -953,7 +1066,7 @@
             if (value == 4) {
                 $('#updateColor').modal('hide');
                 getCuentasBancos();
-                let idtienda = $('#idtiendaU').val();
+                
                 $.post("{{ route('getComprador') }}", {
                         _token: token,
                         id: idtienda
@@ -1023,7 +1136,7 @@
         document.getElementById('voucher').addEventListener('change', function() {
             var fileInput = this;
             var filePath = fileInput.value;
-            var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+            var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.pdf)$/i;
 
             if (!allowedExtensions.exec(filePath)) {
                 document.getElementById('file-error').style.display = 'block';
@@ -1070,8 +1183,8 @@
         $('#saveVenta').click(function() {
             // Validate required fields
             var isValid = true;
-            $('#formVenta input, #formVenta select').each(function() {
-                if ($(this).prop('required') && $(this).val() === '') {
+            $('#formVenta input[required], #formVenta select[required]').each(function() {
+                if ($(this).val() === '') {
                     isValid = false;
                     $(this).addClass('is-invalid');
                 } else {
@@ -1080,16 +1193,27 @@
             });
 
             // Handle file validation
-            var voucherFile = $('#voucher')[0].files[0];
-            var contratoFiles = $('#contratos')[0].files;
-            if (voucherFile && !['image/png', 'image/jpg', 'image/jpeg'].includes(voucherFile.type)) {
+            var voucherFiles = $('#voucher')[0].files;
+            if (voucherFiles.length === 0) {
                 isValid = false;
                 $('#voucher').addClass('is-invalid');
-                $('#file-error').show();
+                $('#file-error').text('El voucher es obligatorio').show();
             } else {
-                $('#voucher').removeClass('is-invalid');
-                $('#file-error').hide();
+                for (var i = 0; i < voucherFiles.length; i++) {
+                    if (voucherFiles[i] && !['image/png', 'image/jpg', 'image/jpeg', 'application/pdf'].includes(
+                            voucherFiles[i].type)) {
+                        isValid = false;
+                        $('#voucher').addClass('is-invalid');
+                        $('#file-error').text(
+                            'El archivo del voucher debe ser una imagen (png, jpg, jpeg) o un PDF').show();
+                        break;
+                    } else {
+                        $('#voucher').removeClass('is-invalid');
+                        $('#file-error').hide();
+                    }
+                }
             }
+            var contratoFiles = $('#contratos')[0].files;
             if (contratoFiles.length > 0) {
                 for (var i = 0; i < contratoFiles.length; i++) {
                     if (contratoFiles[i].type !== 'application/pdf') {
@@ -1110,8 +1234,10 @@
 
             // Create FormData object
             var formData = new FormData($('#formVenta')[0]);
-            formData.append('voucher', voucherFile);
             formData.append('_token', token);
+            for (var i = 0; i < voucherFiles.length; i++) {
+                formData.append('vouchers[]', voucherFiles[i]);
+            }
             for (var i = 0; i < contratoFiles.length; i++) {
                 formData.append('contratos[]', contratoFiles[i]);
             }
@@ -1128,7 +1254,7 @@
                     Swal.fire({
                         icon: "success",
                         title: "Info",
-                        text: "Se registro correctamente",
+                        text: "Se registró correctamente",
                     }).then((result) => {
                         if (result.isConfirmed) {
                             $('#addCompraTiendaModal').modal('hide');
@@ -1141,8 +1267,7 @@
                             $('#otrosInputContainer').hide();
                             location.reload();
                         }
-                    });;
-
+                    });
                 },
                 error: function(response) {
                     // Handle error response
@@ -1150,6 +1275,7 @@
                 }
             });
         });
+
 
         function viewVentaBtn(ventaId) {
             $.ajax({
@@ -1194,15 +1320,25 @@
                     );
 
                     // Cargar datos en el modal
-                    $('#viewCuenta').val(venta.cuenta);
+                    $('#viewVentaId').val(venta.id);
+                    $('#viewCuenta').val(venta.cuenta ?? '-');
                     $('#viewTipoPago').val(venta.tipoPago);
                     $('#viewConvenio').val(venta.convenio);
                     $('#viewCredito').val(venta.credito);
                     $('#viewContado').val(venta.contado);
 
-                    // Configurar el bot&oacute;n para ver el voucher
-                    $('#viewVoucherBtn').off('click').on('click', function() {
-                        window.open('/storage/' + venta.voucher, '_blank');
+                    // Configurar el botón para ver el voucher
+                    let voucherList = $('#viewVoucherList'); // Cambiado a $('#viewVoucherList')
+                    voucherList.empty();
+                    JSON.parse(venta.voucher).forEach(function(voucher, index) {
+                        var voucherBtn = $(
+                            '<button type="button" class="btn btn-primary mb-2" id="viewVoucherBtn"><i class="bi bi-eye-fill"></i>Ver voucher ' +
+                            (index + 1) + '</button>');
+                        voucherBtn.click(function() {
+                            window.open("{{ env('APP_URL') }}" + '/storage/' + voucher,
+                                '_blank');
+                        });
+                        voucherList.append(voucherBtn);
                     });
 
                     // Configurar la lista de contratos
@@ -1211,13 +1347,14 @@
                     JSON.parse(venta.contratos).forEach(function(contrato, index) {
                         var contratoBtn = $(
                             '<button type="button" class="btn btn-primary mb-2" id="viewVoucherBtn"><i class="bi bi-eye-fill"></i>Ver Contrato ' +
-                            (
-                                index + 1) + '</button>');
+                            (index + 1) + '</button>');
                         contratoBtn.click(function() {
-                            window.open('/storage/' + contrato, '_blank');
+                            window.open("{{ env('APP_URL') }}" + '/storage/' + contrato,
+                                '_blank');
                         });
                         contratosList.append(contratoBtn);
                     });
+
                     Swal.close();
                     // Mostrar el modal
                     $('#viewVentaModal').modal('show');
@@ -1227,5 +1364,91 @@
                 }
             });
         }
+        $('#tipoPago').change(function() {
+            let val = $(this).val();
+            if (val === "Transferencia") {
+                $("#cuentan").show();
+            } else {
+                $("#cuentan").hide();
+            }
+        });
+        $('#viewVoucher').change(function() {
+            let file = this.files[0];
+            if (file) {
+                let formData = new FormData();
+                formData.append('voucher', file);
+                formData.append('_token', '{{ csrf_token() }}');
+                formData.append('id', $('#viewVentaId').val());
+                $.ajax({
+                    url: "{{ route('updateVoucher') }}",
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.success) {
+                            let voucherList = $('#viewVoucherList');
+                            let index = voucherList.children().length + 1;
+                            let voucherBtn = $(
+                                '<button type="button" class="btn btn-primary mb-2 viewVoucherBtn-' +
+                                index + '"><i class="bi bi-eye-fill"></i>Ver voucher ' + index +
+                                '</button>');
+                            voucherBtn.click(function() {
+                                window.open("{{ env('APP_URL') }}" + '/storage/' + response
+                                    .voucher, '_blank');
+                            });
+                            voucherList.append(voucherBtn);
+                        } else {
+                            alert('Error al subir el voucher.');
+                        }
+                    }
+                });
+            }
+        });
+
+        $('#viewContratos').change(function() {
+            let file = this.files[0];
+            if (file) {
+                let formData = new FormData();
+                formData.append('contrato', file);
+                formData.append('_token', '{{ csrf_token() }}');
+                formData.append('id', $('#viewVentaId').val());
+                $.ajax({
+                    url: "{{ route('updateContrato') }}",
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.success) {
+                            let contratosList = $('#viewContratosList');
+                            let index = contratosList.children().length + 1;
+                            let contratoBtn = $(
+                                '<button type="button" class="btn btn-primary mb-2 viewContratoBtn-' +
+                                index + '"><i class="bi bi-eye-fill"></i>Ver Contrato ' + index +
+                                '</button>');
+                            contratoBtn.click(function() {
+                                window.open("{{ env('APP_URL') }}" + '/storage/' + response
+                                    .contrato, '_blank');
+                            });
+                            contratosList.append(contratoBtn);
+                        } else {
+                            alert('Error al subir el contrato.');
+                        }
+                    }
+                });
+            }
+        });
+
+        $('#addVoucherBtn').click(function() {
+            $('#viewVoucherContainer').append(
+                '<input type="file" class="form-control mt-2" name="voucher[]" accept=".png, .jpg, .jpeg, .pdf">'
+            );
+        });
+
+        $('#addContratosBtn').click(function() {
+            $('#viewContratosContainer').append(
+                '<input type="file" class="form-control mt-2" name="contratos[]" accept="application/pdf">');
+        });
     </script>
 @endsection
