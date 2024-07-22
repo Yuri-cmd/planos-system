@@ -609,33 +609,35 @@
                             <div id="viewVoucherList" style="display: flex; flex-direction: column; width: fit-content;">
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <div id="viewVoucherContainer"
-                                style="display: flex; flex-direction: column; width: fit-content;">
-                                <label class="custom-file-upload">
-                                    <input type="file" class="form-control-file bg-success " name="voucher[]"
-                                        id="viewVoucher" accept=".png, .jpg, .jpeg, .pdf">
-                                    <i class="bi bi-plus-square-fill"></i> Añadir voucher
-                                </label>
+                        @if (Session::get('rol') !== 3)
+                            <div class="mb-3">
+                                <div id="viewVoucherContainer"
+                                    style="display: flex; flex-direction: column; width: fit-content;">
+                                    <label class="custom-file-upload">
+                                        <input type="file" class="form-control-file bg-success " name="voucher[]"
+                                            id="viewVoucher" accept=".png, .jpg, .jpeg, .pdf">
+                                        <i class="bi bi-plus-square-fill"></i> Añadir voucher
+                                    </label>
+                                </div>
                             </div>
-                        </div>
-
+                        @endif
                         <div class="mb-3">
                             <label for="viewContratos" class="form-label">Contratos</label>
                             <div id="viewContratosList"
                                 style="display: flex; flex-direction: column; width: fit-content;"></div>
                         </div>
-                        <div class="mb-3">
-                            <div id="viewContratosContainer"
-                                style="display: flex; flex-direction: column; width: fit-content;">
-                                <label class="custom-file-upload">
-                                    <input type="file" class="form-control-file bg-success " name="contratos[]"
-                                        id="viewContratos" accept="application/pdf">
-                                    <i class="bi bi-plus-square-fill"></i> Añadir contrato
-                                </label>
+                        @if (Session::get('rol') !== 3)
+                            <div class="mb-3">
+                                <div id="viewContratosContainer"
+                                    style="display: flex; flex-direction: column; width: fit-content;">
+                                    <label class="custom-file-upload">
+                                        <input type="file" class="form-control-file bg-success " name="contratos[]"
+                                            id="viewContratos" accept="application/pdf">
+                                        <i class="bi bi-plus-square-fill"></i> Añadir contrato
+                                    </label>
+                                </div>
                             </div>
-                        </div>
-
+                        @endif
                         <div class="mb-3">
                             <label for="viewConvenio" class="form-label">Convenio</label>
                             <input type="text" class="form-control readonly" id="viewConvenio" readonly>
@@ -1066,7 +1068,7 @@
             if (value == 4) {
                 $('#updateColor').modal('hide');
                 getCuentasBancos();
-                
+
                 $.post("{{ route('getComprador') }}", {
                         _token: token,
                         id: idtienda
@@ -1276,7 +1278,6 @@
             });
         });
 
-
         function viewVentaBtn(ventaId) {
             $.ajax({
                 url: '{{ route('getVenta') }}',
@@ -1326,33 +1327,63 @@
                     $('#viewConvenio').val(venta.convenio);
                     $('#viewCredito').val(venta.credito);
                     $('#viewContado').val(venta.contado);
-
-                    // Configurar el botón para ver el voucher
-                    let voucherList = $('#viewVoucherList'); // Cambiado a $('#viewVoucherList')
+                    let rol = "{{ Session::get('rol') }}";
+                    // Configurar la lista de vouchers
+                    let voucherList = $('#viewVoucherList');
                     voucherList.empty();
                     JSON.parse(venta.voucher).forEach(function(voucher, index) {
-                        var voucherBtn = $(
-                            '<button type="button" class="btn btn-primary mb-2" id="viewVoucherBtn"><i class="bi bi-eye-fill"></i>Ver voucher ' +
-                            (index + 1) + '</button>');
+                        let voucherBtn = $(
+                            `<button type="button" class="btn btn-primary mb-2" id="viewVoucherBtn">
+                        <i class="bi bi-eye-fill"></i> Ver voucher ${index + 1}
+                    </button>`
+                        );
+                        let deleteBtn = '';
+                        if (rol !== "3") {
+                            deleteBtn = $(
+                                `<button type="button" class="btn btn-danger mb-2 ms-2" id="deleteVoucherBtn">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>`
+                            );
+                            deleteBtn.click(function() {
+                                deleteVoucher(voucher, $(this));
+                            });
+                        }
+
+
                         voucherBtn.click(function() {
                             window.open("{{ env('APP_URL') }}" + '/storage/' + voucher,
                                 '_blank');
                         });
-                        voucherList.append(voucherBtn);
+                        voucherList.append($('<div class="d-inline-flex"></div>').append(voucherBtn,
+                            deleteBtn));
                     });
 
                     // Configurar la lista de contratos
                     var contratosList = $('#viewContratosList');
                     contratosList.empty();
                     JSON.parse(venta.contratos).forEach(function(contrato, index) {
-                        var contratoBtn = $(
-                            '<button type="button" class="btn btn-primary mb-2" id="viewVoucherBtn"><i class="bi bi-eye-fill"></i>Ver Contrato ' +
-                            (index + 1) + '</button>');
+                        let contratoBtn = $(
+                            `<button type="button" class="btn btn-primary mb-2" id="viewContratoBtn">
+                        <i class="bi bi-eye-fill"></i> Ver Contrato ${index + 1}
+                    </button>`
+                        );
+                        let deleteContratoBtn = '';
+                        if (rol !== "3") {
+                            deleteContratoBtn = $(
+                                `<button type="button" class="btn btn-danger mb-2 ms-2" id="deleteContratoBtn">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>`
+                            );
+                            deleteContratoBtn.click(function() {
+                                deleteContrato(contrato, $(this));
+                            });
+                        }
                         contratoBtn.click(function() {
                             window.open("{{ env('APP_URL') }}" + '/storage/' + contrato,
                                 '_blank');
                         });
-                        contratosList.append(contratoBtn);
+                        contratosList.append($('<div class="d-inline-flex"></div>').append(contratoBtn,
+                            deleteContratoBtn));
                     });
 
                     Swal.close();
@@ -1364,6 +1395,26 @@
                 }
             });
         }
+
+        function deleteVoucher(voucherPath, deleteBtn) {
+            $.ajax({
+                url: "{{ route('deleteVoucher') }}",
+                method: 'POST',
+                data: {
+                    '_token': '{{ csrf_token() }}',
+                    'voucherPath': voucherPath,
+                    'id': $('#viewVentaId').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        deleteBtn.parent().remove(); // Remove the container div with both buttons
+                    } else {
+                        alert('Error al eliminar el voucher.');
+                    }
+                }
+            });
+        }
+
         $('#tipoPago').change(function() {
             let val = $(this).val();
             if (val === "Transferencia") {
@@ -1372,7 +1423,8 @@
                 $("#cuentan").hide();
             }
         });
-        $('#viewVoucher').change(function() {
+
+        $(document).on('change', '#viewVoucher', function() {
             let file = this.files[0];
             if (file) {
                 let formData = new FormData();
@@ -1390,14 +1442,28 @@
                             let voucherList = $('#viewVoucherList');
                             let index = voucherList.children().length + 1;
                             let voucherBtn = $(
-                                '<button type="button" class="btn btn-primary mb-2 viewVoucherBtn-' +
-                                index + '"><i class="bi bi-eye-fill"></i>Ver voucher ' + index +
-                                '</button>');
+                                `<button type="button" class="btn btn-primary mb-2 viewVoucherBtn-${index}">
+                            <i class="bi bi-eye-fill"></i> Ver voucher ${index}
+                        </button>`
+                            );
+                            let deleteBtn = $(
+                                `<button type="button" class="btn btn-danger mb-2 ms-2 deleteVoucherBtn-${index}">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>`
+                            );
+                            deleteBtn.click(function() {
+                                deleteVoucher(response.voucher, $(this));
+                            });
                             voucherBtn.click(function() {
                                 window.open("{{ env('APP_URL') }}" + '/storage/' + response
                                     .voucher, '_blank');
                             });
-                            voucherList.append(voucherBtn);
+                            voucherList.append($('<div class="d-inline-flex"></div>').append(voucherBtn,
+                                deleteBtn));
+
+                            // Reemplazar el input de archivo para permitir múltiples cargas consecutivas
+                            $('#viewVoucher').val(
+                                ''); // Limpiar el valor del input para permitir el mismo archivo
                         } else {
                             alert('Error al subir el voucher.');
                         }
@@ -1406,7 +1472,8 @@
             }
         });
 
-        $('#viewContratos').change(function() {
+
+        $(document).on('change', '#viewContratos', function() {
             let file = this.files[0];
             if (file) {
                 let formData = new FormData();
@@ -1424,14 +1491,28 @@
                             let contratosList = $('#viewContratosList');
                             let index = contratosList.children().length + 1;
                             let contratoBtn = $(
-                                '<button type="button" class="btn btn-primary mb-2 viewContratoBtn-' +
-                                index + '"><i class="bi bi-eye-fill"></i>Ver Contrato ' + index +
-                                '</button>');
+                                `<button type="button" class="btn btn-primary mb-2 viewContratoBtn-${index}">
+                            <i class="bi bi-eye-fill"></i> Ver Contrato ${index}
+                        </button>`
+                            );
+                            let deleteContratoBtn = $(
+                                `<button type="button" class="btn btn-danger mb-2 ms-2 deleteContratoBtn-${index}">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>`
+                            );
+                            deleteContratoBtn.click(function() {
+                                deleteContrato(response.contrato, $(this));
+                            });
                             contratoBtn.click(function() {
                                 window.open("{{ env('APP_URL') }}" + '/storage/' + response
                                     .contrato, '_blank');
                             });
-                            contratosList.append(contratoBtn);
+                            contratosList.append($('<div class="d-inline-flex"></div>').append(
+                                contratoBtn, deleteContratoBtn));
+
+                            // Reemplazar el input de archivo para permitir múltiples cargas consecutivas
+                            $('#viewContratos').val(
+                            ''); // Limpiar el valor del input para permitir el mismo archivo
                         } else {
                             alert('Error al subir el contrato.');
                         }
@@ -1450,5 +1531,44 @@
             $('#viewContratosContainer').append(
                 '<input type="file" class="form-control mt-2" name="contratos[]" accept="application/pdf">');
         });
+
+        function deleteVoucher(voucherPath, deleteBtn) {
+            $.ajax({
+                url: "{{ route('deleteVoucher') }}",
+                method: 'POST',
+                data: {
+                    '_token': '{{ csrf_token() }}',
+                    'voucherPath': voucherPath,
+                    'id': $('#viewVentaId').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        deleteBtn.prev().remove(); // Remove view button
+                        deleteBtn.remove(); // Remove delete button
+                    } else {
+                        alert('Error al eliminar el voucher.');
+                    }
+                }
+            });
+        }
+
+        function deleteContrato(contratoPath, deleteBtn) {
+            $.ajax({
+                url: "{{ route('deleteContrato') }}",
+                method: 'POST',
+                data: {
+                    '_token': '{{ csrf_token() }}',
+                    'contratoPath': contratoPath,
+                    'id': $('#viewVentaId').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        deleteBtn.parent().remove(); // Remove the container div with both buttons
+                    } else {
+                        alert('Error al eliminar el contrato.');
+                    }
+                }
+            });
+        }
     </script>
 @endsection

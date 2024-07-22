@@ -37,6 +37,8 @@ Route::middleware(['auth.custom'])->group(function () {
     Route::post('getStatusTienda', [DashboardController::class, 'getStatusTienda'])->name('getStatusTienda');
     Route::post('/updateVoucher', [DashboardController::class, 'updateVoucher'])->name('updateVoucher');
     Route::post('/updateContrato', [DashboardController::class, 'updateContrato'])->name('updateContrato');
+    Route::post('/delete-voucher', [DashboardController::class, 'deleteVoucher'])->name('deleteVoucher');
+    Route::post('/delete-contrato', [DashboardController::class, 'deleteContrato'])->name('deleteContrato');
 
     // Clientes
     Route::get('admin/clientes', [DashboardController::class, 'clientes'])->name('clientes');

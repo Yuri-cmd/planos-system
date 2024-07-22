@@ -192,7 +192,7 @@ class DashboardController extends Controller
         } elseif ($estado == 5 && $tienda->nombre_cargo) {
             return $tienda->nombre_cargo;
         } elseif ($estado == 0) {
-            return  $estadoActual == 3 ? $tienda->nombre_cargo :null;
+            return  $estadoActual == 3 ? $tienda->nombre_cargo : null;
         } else {
             return $nombreCargo;
         }
@@ -207,8 +207,8 @@ class DashboardController extends Controller
 
     function determinarEstado($nombreCargo, $estado = null)
     {
-        
-        if($estado == 3 || $estado == 4){
+
+        if ($estado == 3 || $estado == 4) {
             if (strpos($nombreCargo, 'Socio') !== false) {
                 return 2;
             } elseif (strpos($nombreCargo, 'Empresa') !== false) {
@@ -216,7 +216,7 @@ class DashboardController extends Controller
             }
         }
 
-        if($estado == 1 || $estado == 2){
+        if ($estado == 1 || $estado == 2) {
             return 0;
         }
 
@@ -226,7 +226,7 @@ class DashboardController extends Controller
             return 1;
         }
 
-        
+
         return 0;
     }
 
@@ -418,6 +418,52 @@ class DashboardController extends Controller
             $venta->save();
 
             return response()->json(['success' => true, 'contrato' => $path]);
+        }
+
+        return response()->json(['success' => false]);
+    }
+
+    public function deleteVoucher(Request $request)
+    {
+        $venta = Venta::find($request->id);
+
+        if ($venta) {
+            $vouchers = json_decode($venta->voucher, true);
+            $voucherPath = $request->voucherPath;
+
+            if (($key = array_search($voucherPath, $vouchers)) !== false) {
+                unset($vouchers[$key]);
+                $venta->voucher = json_encode(array_values($vouchers));
+                $venta->save();
+
+                // Delete the file from storage
+                Storage::disk('custom_public')->delete($voucherPath);
+
+                return response()->json(['success' => true]);
+            }
+        }
+
+        return response()->json(['success' => false]);
+    }
+
+    public function deleteContrato(Request $request)
+    {
+        $venta = Venta::find($request->id);
+
+        if ($venta) {
+            $contratos = json_decode($venta->contratos, true);
+            $contratoPath = $request->contratoPath;
+
+            if (($key = array_search($contratoPath, $contratos)) !== false) {
+                unset($contratos[$key]);
+                $venta->contratos = json_encode(array_values($contratos));
+                $venta->save();
+
+                // Delete the file from storage
+                Storage::disk('custom_public')->delete($contratoPath);
+
+                return response()->json(['success' => true]);
+            }
         }
 
         return response()->json(['success' => false]);
