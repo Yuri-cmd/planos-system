@@ -97,7 +97,7 @@ class DashboardController extends Controller
 
     public function getUsuarios()
     {
-        $usuarios = Usuario::with('rol')->get();
+        $usuarios = Usuario::with('rol')->where('id', '!=', 1)->get();
         return json_encode($usuarios);
     }
 

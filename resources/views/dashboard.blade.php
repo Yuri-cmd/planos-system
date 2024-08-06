@@ -952,11 +952,11 @@
                     if (!flag) {
                         if (reserva == '1' && v.id !== 3 && estado !== 4) {
                             if (v.id !== 1 && v.id !== 2) {
-                                if (rol !== 1 && v.id !== 0) {
+                                if (rol == 3 && v.id !== 0) {
                                     option +=
                                         `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
                                 }
-                                if (rol == 1) {
+                                if (rol !== 3) {
                                     option +=
                                         `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
                                 }
@@ -965,11 +965,11 @@
 
                         if (reserva == '1' && v.id !== 3 && estado == 4 && v.id !== 4 && v.id !== 5) {
                             if (v.id !== 1 && v.id !== 2) {
-                                if (rol !== 1 && v.id !== 0) {
+                                if (rol == 3 && v.id !== 0) {
                                     option +=
                                         `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
                                 }
-                                if (rol == 1) {
+                                if (rol !== 3) {
                                     option +=
                                         `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
                                 }
@@ -977,11 +977,11 @@
                         }
 
                         if (reserva !== '1') {
-                            if (rol !== 1 && v.id !== 0) {
+                            if (rol == 3 && v.id !== 0) {
                                 option +=
                                     `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
                             }
-                            if (rol == 1) {
+                            if (rol !== 3) {
                                 if (v.id !== 1 && v.id !== 2) {
                                     option +=
                                         `<option value="${v.id}">${capitalizeFirstLetter(v.descripcion)}</option>`;
@@ -1512,7 +1512,7 @@
 
                             // Reemplazar el input de archivo para permitir múltiples cargas consecutivas
                             $('#viewContratos').val(
-                            ''); // Limpiar el valor del input para permitir el mismo archivo
+                                ''); // Limpiar el valor del input para permitir el mismo archivo
                         } else {
                             alert('Error al subir el contrato.');
                         }
@@ -1533,40 +1533,75 @@
         });
 
         function deleteVoucher(voucherPath, deleteBtn) {
-            $.ajax({
-                url: "{{ route('deleteVoucher') }}",
-                method: 'POST',
-                data: {
-                    '_token': '{{ csrf_token() }}',
-                    'voucherPath': voucherPath,
-                    'id': $('#viewVentaId').val()
-                },
-                success: function(response) {
-                    if (response.success) {
-                        deleteBtn.prev().remove(); // Remove view button
-                        deleteBtn.remove(); // Remove delete button
-                    } else {
-                        alert('Error al eliminar el voucher.');
-                    }
+            Swal.fire({
+                title: "Esta seguro?",
+                text: "No se podrá revertir",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Eliminar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ route('deleteVoucher') }}",
+                        method: 'POST',
+                        data: {
+                            '_token': '{{ csrf_token() }}',
+                            'voucherPath': voucherPath,
+                            'id': $('#viewVentaId').val()
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: "Eliminado!",
+                                    text: "Eliminado correctamente.",
+                                    icon: "success"
+                                });
+                                deleteBtn.prev().remove(); // Remove view button
+                                deleteBtn.remove(); // Remove delete button
+                            } else {
+                                alert('Error al eliminar el voucher.');
+                            }
+                        }
+                    });
                 }
             });
         }
 
         function deleteContrato(contratoPath, deleteBtn) {
-            $.ajax({
-                url: "{{ route('deleteContrato') }}",
-                method: 'POST',
-                data: {
-                    '_token': '{{ csrf_token() }}',
-                    'contratoPath': contratoPath,
-                    'id': $('#viewVentaId').val()
-                },
-                success: function(response) {
-                    if (response.success) {
-                        deleteBtn.parent().remove(); // Remove the container div with both buttons
-                    } else {
-                        alert('Error al eliminar el contrato.');
-                    }
+            Swal.fire({
+                title: "Esta seguro?",
+                text: "No se podrá revertir",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Eliminar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ route('deleteContrato') }}",
+                        method: 'POST',
+                        data: {
+                            '_token': '{{ csrf_token() }}',
+                            'contratoPath': contratoPath,
+                            'id': $('#viewVentaId').val()
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: "Eliminado!",
+                                    text: "Eliminado correctamente.",
+                                    icon: "success"
+                                });
+                                deleteBtn.parent()
+                                    .remove(); // Remove the container div with both buttons
+                            } else {
+                                alert('Error al eliminar el contrato.');
+                            }
+                        }
+                    });
                 }
             });
         }
